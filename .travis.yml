@@ -10,7 +10,7 @@ if: tag IS blank
 jobs:
   include:
     - stages:
-      - stage: build and publish
+      - name: build and publish
         language: java
         jdk: oraclejdk8
         install: skip
@@ -24,7 +24,7 @@ jobs:
           api_key: $GITHUB_OAUTH_TOKEN
           file: "build/libs/pal-tracker.jar"
           skip_cleanup: true
-      - stage: deploy to review
+      - name: deploy to review
         language: bash
         script:
           - echo "Downloading $RELEASE_TAG"
@@ -38,20 +38,3 @@ jobs:
           password: $CF_PASSWORD
           organization: $CF_ORG
           space: review
-      - stage: deploy to stage
-        if: branch =~ ^release$
-        language: bash
-        script:
-          - echo "Downloading $RELEASE_TAG"
-          - wget -P build/libs https://github.com/$GITHUB_USERNAME/pal-tracker/releases/download/$RELEASE_TAG/pal-tracker.jar
-        before_deploy:
-          - echo "Deploying $RELEASE_TAG to stage"
-        deploy:
-          provider: cloudfoundry
-          api: $CF_API_URL
-          username: $CF_USERNAME
-          password: $CF_PASSWORD
-          organization: $CF_ORG
-          space: stage
-
-
